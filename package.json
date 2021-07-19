@@ -1,0 +1,22 @@
+{
+  "name": "nebulus",
+  "version": "0.0.2",
+  "description": "Virtual IPFS",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha --timeout 10000"
+  },
+  "author": "skogard",
+  "license": "MIT",
+  "dependencies": {
+    "async-exit-hook": "^2.0.1",
+    "axios": "^0.21.1",
+    "bl": "^5.0.0",
+    "ipfs-core": "^0.8.0",
+    "ipfs-unixfs-importer": "^8.0.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.2"
+  }
+}

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>Nebulus</title>
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="nebulus documentation" />
+  <meta name="twitter:description" content="Virtual IPFS" />
+  <meta name="twitter:image" content="https://docs.nebulus.dev/poster.png" />
+  <meta property="og:url" content="https://nebulus.dev" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="nebulus documentation" />
+  <meta property="og:description" content="Virtual IPFS" />
+  <meta property="og:image" content="https://docs.nebulus.dev/poster.png" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Virtual IPFS">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;800&display=swap" rel="stylesheet">
+  <style>
+  body {
+    font-size: 14px;
+  }
+  .caption, .caption a {
+    text-align: right;
+    color: rgba(0,0,0,0.3);
+  }
+  .caption p {
+    margin: 0;
+  }
+  .sidebar, body {
+    font-family: 'Noto Sans', sans-serif;
+  }
+  aside {
+    background-color: brown !important;
+  }
+  .sidebar ul li.active>a {
+    color: rgba(0,0,0,0.3);
+  }
+  .sidebar ul li a {
+    color: rgba(255,255,255,0.7);
+    line-height: 25px;
+  }
+  .markdown-section ol, .markdown-section p, .markdown-section ul {
+    line-height: 1.4rem;
+  }
+  .videoWrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
+  }
+  .videoWrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .highlight {
+    background: yellow;
+    padding: 5px 20px;
+  }
+  .sidebar li {
+    margin: 0;
+  }
+  h1 {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+  }
+  h2 {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+  .large {
+    font-family: Sans-serif;
+    margin: 0;
+    font-weight:600;
+    text-transform: uppercase;
+    font-size: 2rem;
+    background: brown;
+    color: white;
+    padding: 20px;
+  }
+  h4 {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 400;
+    text-transform: lowercase;
+  }
+  h3 {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 400;
+  }
+  .markdown-section h1 {
+    font-size: 3rem;
+  }
+  section.cover.has-mask .mask {
+    background: rgba(0,0,0,0.9);
+  }
+  section.cover blockquote {
+    font-size: 14px;
+  }
+  .cover-main p a {
+    background: rgba(0,0,0,0.2) !important;
+    color: white !important;
+    border: none !important;
+    padding: 2px 10px !important;
+    font-size: 11px !important;
+    width: 100px;
+    font-family: Sans-serif !important;
+  }
+  section.cover.show {
+    background: brown !important;
+    color: white !important;
+  }
+  section.cover h1 {
+    font-family: 'Raleway', sans-serif;
+    font-weight:800;
+    color: white;
+  }
+  section.cover .anchor span {
+    color: white !important;
+  }
+  .anchor span {
+    color: brown !important;
+  }
+  h2 .anchor span, h3 .anchor span {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 400;
+  }
+  .markdown-section {
+    max-width: 800px;
+    margin: 0 20px;
+  }
+  .markdown-section hr {
+    border-bottom: 1px solid rgba(0,0,0,0.1) !important;
+    margin: 4rem 0 3em 0 !important;
+  }
+  .markdown-section code {
+    color: brown;
+  }
+  .markdown-section pre code {
+    background: none;
+  }
+  .markdown-section pre {
+    border-left: 5px solid brown;
+    background: rgba(200,0,0,0.03);
+    line-height: 1.2rem;
+  }
+  </style>
+  <link href="./prism.css" rel="stylesheet">
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      themeColor: "black",
+      maxLevel: 3,
+      name: '',
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      setTimeout(() => {
+        const y = document.querySelector("#" + location.hash.split("=")[1]).getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({top: y});
+      }, 1500)
+    })
+
+  </script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
+</body>
+</html>
