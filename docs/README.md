@@ -101,6 +101,20 @@ This unbundling means more flexibility. For example you can use other network tr
 
 Sometimes you may want to openly publish a hash of a file before revealing the contents of the file. This way you can prove later that you had that file at that point in time. You can use Nebulus for this.
 
+This property can be used for various use cases such as:
+
+#### 1. Peer to Peer Proof of Existence
+
+Create a Nebulus file, share its hash with someone over any channel to prove it existed at certain point in time (email, messaging apps, social media), and later reveal content.
+
+#### 2. Blockchain timestamping
+
+Use the IPFS encoding format to store files privately and timestamp on the blockchain (like [Opentimestamps](https://opentimestamps.org/)) without revealing the contents.
+
+#### 3. Mystery NFT Collection
+
+Create an NFT collection that does not reveal its contents initially, but later you can easily "upload" to IPFS with one line of code.
+
 ## Private Draft for IPFS
 
 You may want to work with a whole archive of files that you'll publish to IPFS eventually.
@@ -126,13 +140,11 @@ Nebulus provides a new way to store and serve IPFS files privately.
 
 Instead of serving your files to the public through the IPFS network, you can serve them privately to those who have permission to access the data.
 
-## IPFS as Private Messaging Packet
+## IPFS as Data Packet
 
-We can go further and use IPFS as a packet for ensuring message authenticity.
+Because Nebulus has unbundled the IPFS encoding format from the IPFS network, we can go further and ONLY use the IPFS for its encoding format.
 
-Instead of sharing all files on the public IPFS network, you can encode data in Nebulus and pass around Nebulus data privately.
-
-For example,
+You can use IPFS only as a data packet for communicating between parties, instead of thinking of it as a public storage. For example,
 
 1. Use Nebulus to create a file with IPFS CID filename, and attach it in a private email or private message
 2. A server for posting IPFS files privately.
