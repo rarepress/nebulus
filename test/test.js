@@ -48,7 +48,85 @@ describe('nebulus', function() {
     })
     describe('ipfs', () => {
       before(async function() {
-        await nebulus.ipfs.start()
+        await nebulus.connect()
+      })
+      describe("pull", () => {
+        // same as "ipfs.download"
+        it('should dowload folders correctly', async () => {
+          const cid = "bafybeicaivkonz2sofegu2thshbeod3723ye2i5c5ivsyhv7gyuyunyyoq"
+          nebulus.pull(cid)
+          await new Promise((resolve, reject) => {
+            nebulus.on("pull", (downloaded_cid) => {
+              let filePath = STORE + "/ipfs/" + downloaded_cid
+              // 1. check cid
+              assert.equal(cid, downloaded_cid) 
+              // 2. Check the file exists
+              fs.access(filePath, fs.constants.F_OK, (err) => {
+                assert(!err)
+                // 3. Check the file is symbolic link
+                fs.lstat(filePath, (err,stats) => {
+                  assert(stats.isDirectory())
+                  resolve()
+                })
+              });
+            })
+          })
+        })
+        it('should dowload files correctly', async () => {
+          const cid = "bafkreifzjut3te2nhyekklss27nh3k72ysco7y32koao5eei66wof36n5e"
+          nebulus.pull(cid)
+          await new Promise((resolve, reject) => {
+            nebulus.on("pull", (downloaded_cid) => {
+              let filePath = STORE + "/ipfs/" + downloaded_cid
+              // 1. check cid
+              assert.equal(cid, downloaded_cid) 
+              // 2. Check the file exists
+              fs.access(filePath, fs.constants.F_OK, (err) => {
+                assert(!err)
+                // 3. Check the file is symbolic link
+                fs.lstat(filePath, (err,stats) => {
+                  assert(stats.isSymbolicLink())
+                  // 4. Check the linked file exists
+                  fs.readlink(filePath, (err, linkString) => {
+                    assert(linkString)
+                    resolve()
+                  });
+                })
+              });
+            })
+          })
+        })
+      })
+      describe("push", () => {
+        it('should upload buffers correctly', async function () {
+          //this.timeout(10000)
+          const buffer = Buffer.from("premium pineapple pomelo seltzer with other natural flavors for depth & complexity")
+          const cid = await nebulus.add(buffer)
+          nebulus.push(cid)
+          let actual = await new Promise((resolve, reject) => {
+            nebulus.on("push", (actual) => {
+              resolve(actual)
+            })
+          })
+          assert.equal(cid, actual)
+        });
+        it('should replicate local folder correctly', async () => {
+          let cid = await nebulus.folder({
+            "aperank.png": await nebulus.add(__dirname + "/fixture/aperank/aperank.png"),
+            "readme.md": await nebulus.add(__dirname + "/fixture/aperank/readme.md"),
+            "index.js": await nebulus.add(__dirname + "/fixture/aperank/index.js"),
+            "package.json": await nebulus.add(__dirname + "/fixture/aperank/package.json")
+          })
+          let files = await fs.promises.readdir(STORE + "/ipfs/" + cid)
+          assert.deepEqual(files, ["aperank.png", "index.js", "package.json", "readme.md"])
+          nebulus.push(cid)
+          let actual = await new Promise((resolve, reject) => {
+            nebulus.on("push", (actual) => {
+              resolve(actual)
+            })
+          })
+          assert.equal(cid, actual)
+        })
       })
       describe("download", () => {
         it('should dowload folders correctly', async () => {

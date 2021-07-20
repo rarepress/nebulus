@@ -1,4 +1,4 @@
-![localremote](localremote.png)
+![localremote2](localremote2.png)
 
 # Nebulus
 
@@ -66,7 +66,7 @@ With Nebulus, the network and the file system are unbundled and you can use IPFS
 
 Instead of publishing everything to the public IPFS network immediately, you can work with IPFS files locally, and publish later:
 
-![localremote](localremote.png)
+![localremote2](localremote2.png)
 
 This is similar to how Git works (compared to centralized version control systems like SVN, where everyone needs to publish immediately to the central repository to take advantage of the version control features):
 
@@ -85,8 +85,8 @@ However with Nebulus, you now have the option to use Nebulus as an offline buffe
 // 1. Privately add an IPFS file to the local file system
 let cid = await nebulus.add(Buffer.from("Hello world"))
 
-// 2. "Upload" to the public IPFS network
-nebulus.ipfs.upload(cid)
+// 2. "Push" to the public IPFS network
+nebulus.push(cid)
 ```
 
 Essentially, **Nebulus unbundles the IPFS file format from the IPFS network.**
@@ -167,8 +167,8 @@ Here's an example workflow:
 You can use the `upload` event to achieve this: 
 
 ```javascript
-await nebulus.ipfs.start()
-nebulus.ipfs.on("upload", (cid) => {
+await nebulus.connect()
+nebulus.on("push", (cid) => {
   // do something here
 })
 ```
@@ -253,18 +253,18 @@ const run = async () => {
 run()
 ```
 
-## Download a File from IPFS
+## Pull a File from IPFS
 
 ```javascript
 const Nebulus = require('nebulus')
 const nebulus = new Nebulus()
 const run = async (cid) => {
-  await nebulus.ipfs.start()
-  nebulus.ipfs.download(cid)
-  nebulus.ipfs.on("download", (downloaded_cid) => {
-    console.log("downloaded cid", downloaded_cid)
-    fs.createReadWtream("storage/ipfs/" + downloaded_cid).pipe(process.stdout)
+  await nebulus.connect()
+  nebulus.on("pull", (pulled_cid) => {
+    console.log("pulled cid", pulled_cid)
+    fs.createReadWtream("storage/ipfs/" + pulled_cid).pipe(process.stdout)
   })
+  nebulus.pull(cid)
 }
 const cid = "bafkreifzjut3te2nhyekklss27nh3k72ysco7y32koao5eei66wof36n5e"
 run(cid)
@@ -278,11 +278,11 @@ const nebulus = new Nebulus()
 const run = async (cid) => {
   const buffer = Buffer.from("never gonna give you up")
   const cid = await nebulus.add(buffer)
-  nebulus.ipfs.upload(cid)
-  nebulus.ipfs.on("upload", (uploaded_cid) => {
+  nebulus.on("push", (uploaded_cid) => {
     // check the following uploaded URL in the browser
     console.log("https://ipfs.io/ipfs/" + uploaded_cid)
   })
+  nebulus.push(cid)
 }
 ```
 
@@ -296,11 +296,10 @@ const run = async (cid) => {
 3. `folder`: Create a folder from IPFS CIDs
 4. `get`: Get file contents by CID
 5. `stream`: Get file stream by CID
-6. `ipfs`: IPFS node daemon module
-    - `start`: initialize IPFS node
-    - `stop`: stop the IPFS node
-    - `upload`: Publish to the global IPFS network, wait till it's replicated to public IPFS gateways, and quit.
-    - `download`: Download a CID from the IPFS network into Nebulus
+6. `connect`: initialize and connect to the public IPFS network
+7. `disconnect`: stop and disconnect from the public IPFS network
+8. `push`: Publish to the global IPFS network, wait till it's replicated to public IPFS gateways, and trigger "push" event.
+9. `pull`: Pull a CID from the IPFS network into Nebulus. trigger "pull" event when download is complete.
 
 ## Initizlizing
 
@@ -437,62 +436,62 @@ stream.pipe(process.stdout)
 
 ## IPFS
 
-The `nebulus.ipfs` module lets you interact with the public global IPFS network.
+interact with the public global IPFS network.
 
-### start
+### connect
 
 Initializing IPFS node.
 
 > You must first initialize the node before doing anything.
 
 ```javascript
-await nebulus.ipfs.start()
+await nebulus.connect()
 ```
 
-### stop
+### disconnect
 
 Stop IPFS node
 
 ```javascript
-await nebulus.ipfs.stop()
+await nebulus.disconnect()
 ```
 
-### upload
+### push
 
 Publishing one or more local Nebulus CIDs to the global IPFS network:
 
 ```javascript
-await nebulus.ipfs.start()
-nebulus.ipfs.upload(<cid>)
+await nebulus.connect()
+nebulus.push(<cid>)
 ```
 
 Triggers an "upload" event when the file is successfully replicated to IPFS gateways
 
 ```javascript
-await nebulus.ipfs.start()
-nebulus.ipfs.on("upload", (cid) => {
+await nebulus.connect()
+nebulus.on("push", (cid) => {
   // do something here
 })
-nebulus.ipfs.upload(cid)
+nebulus.push(cid)
 ```
 
-### download
+### pull
 
-download IPFS files to Nebulus
+pull files from the public IPFS network to Nebulus
 
 ```javascript
-await nebulus.ipfs.start()
-nebulus.ipfs.download(cid)
+await nebulus.connect()
+nebulus.pull(cid)
 ```
 
-Emits a "download" event when download is complete
+Emits a "pull" event when pull is complete
 
 ```javascript
-await nebulus.ipfs.start()
-nebulus.ipfs.on("download", (cid) => {
+await nebulus.connect()
+nebulus.on("pull", (cid) => {
   // do something
 })
-nebulus.ipfs.download(cid)
+nebulus.pull(cid)
 ```
 
 ---

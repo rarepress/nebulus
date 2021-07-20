@@ -63,6 +63,12 @@ class Network {
   async stop() {
     await this.ipfs.stop()
   }
+  push(cid) {
+    return this.upload(cid)
+  }
+  pull(cid) {
+    return this.download(cid)
+  }
   async download(cid) {
     let folder = null;
     let mapping = {}
@@ -105,6 +111,9 @@ class Network {
       await this.parent.folder(mapping)
     }
     if (this.events.download) this.events.download(cid)
+    if (this.events.pull) this.events.pull(cid)
+    if (this.parent.events.download) this.parent.events.download(cid)
+    if (this.parent.events.pull) this.parent.events.pull(cid)
   }
   async upload(cid) {
     if (!this.ipfs) {
@@ -145,6 +154,9 @@ class Network {
       await this.check(res.cid.toString())
     }
     if (this.events.upload) this.events.upload(res.cid.toString())
+    if (this.events.push) this.events.push(res.cid.toString())
+    if (this.parent.events.upload) this.parent.events.upload(res.cid.toString())
+    if (this.parent.events.push) this.parent.events.push(res.cid.toString())
   }
   async check(cid) {
     while(true) {
@@ -166,6 +178,7 @@ class Network {
 }
 class Nebulus {
   constructor(options) {
+    this.events = {}
     this.storage = (options && options.path ? options.path : ".nebulus")
     this.max = (options && options.max ? options.max : null)
     this.cid = new CID()
@@ -177,6 +190,21 @@ class Nebulus {
     try { fs.mkdirSync(this.storage, { recursive: true }) } catch (e) {} 
     try { fs.mkdirSync(`${this.storage}/src`, { recursive: true }) } catch (e) {}
     try { fs.mkdirSync(`${this.storage}/ipfs`, { recursive: true }) } catch (e) {}
+  }
+  connect() {
+    return this.ipfs.start()
+  }
+  disconnect() {
+    return this.ipfs.stop()
+  }
+  push(cid) {
+    return this.ipfs.push(cid)
+  }
+  pull(cid) {
+    return this.ipfs.pull(cid)
+  }
+  on (event, callback) {
+    this.events[event] = callback
   }
   download(url) {
     return this.import(url)
