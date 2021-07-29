@@ -301,7 +301,7 @@ const run = async (cid) => {
 8. `push`: Publish to the global IPFS network, wait till it's replicated to public IPFS gateways, and trigger "push" event.
 9. `pull`: Pull a CID from the IPFS network into Nebulus. trigger "pull" event when download is complete.
 
-## Initizlizing
+## Initializing
 
 ### constructor
 
@@ -495,3 +495,75 @@ nebulus.pull(cid)
 ```
 
 ---
+
+# Events
+
+## Supported Events
+
+You can use `on()` to listen to events. Currently supported events:
+
+- `pull`: for when calling `nebulus.pull()`
+- `push`: for when calling `nebulus.push()`
+
+## Types
+
+You can either listen to a global event, or a filtered CID event.
+
+1. **Global:** A global event may be useful when you use Nebulus as a daemon and want to get all the CIDs being pushed or pulled.
+2. **Filtered:** If you want a one-off event handler for a specific CID, you can use the filtered event
+
+
+### Global Event
+
+Push event:
+
+```javascript
+await nebulus.connect()
+nebulus.on("push", (cid) => {
+  // do something here
+})
+nebulus.push(cid)
+```
+
+Pull event
+
+```javascript
+await nebulus.connect()
+nebulus.on("pull", (cid) => {
+  // do something
+})
+nebulus.pull(cid)
+```
+
+### Filtered Event
+
+Filtered events let you listen for a specific event. The event handler only gets triggered once and gets destructed afterwards.
+
+The event looks like this:
+
+- **push:** `push:<cid>`
+- **pull:** `pull:<cid>`
+
+Here's an example code for capturing a CID push event:
+
+```javascript
+let cid = await nebulus.add(Buffer.from("hello world"))
+let event = "push:" + cid
+await nebulus.connect()
+nebulus.on(event, (cid) => {
+  // do something here
+})
+nebulus.push(cid)
+```
+
+Here's an example code for capturing a CID pull event:
+
+```javascript
+let event = "pull:" + cid
+await nebulus.connect()
+nebulus.on(event, (cid) => {
+  // do something
+})
+nebulus.pull(cid)
+```
+

@@ -110,10 +110,26 @@ class Network {
     if (folder) {
       await this.parent.folder(mapping)
     }
-    if (this.events.download) this.events.download(cid)
-    if (this.events.pull) this.events.pull(cid)
-    if (this.parent.events.download) this.parent.events.download(cid)
-    if (this.parent.events.pull) this.parent.events.pull(cid)
+    this.trigger(["download", "pull"], cid)
+  }
+  trigger(events, cid) {
+    // events := ["download", "pull"]
+    for(let event of events) {
+      // global event
+      if (this.events[event]) this.events[event](cid)
+      if (this.parent.events[event]) this.parent.events[event](cid)
+
+      // filtered event
+      let e = event + ":" + cid
+      if (this.events[e]) {
+        this.events[e](cid)
+        delete this.events[e]
+      }
+      if (this.parent.events[e]) {
+        this.parent.events[e](cid)
+        delete this.parent.events[e]
+      }
+    }
   }
   async upload(cid) {
     if (!this.ipfs) {
@@ -153,10 +169,7 @@ class Network {
       })
       await this.check(res.cid.toString())
     }
-    if (this.events.upload) this.events.upload(res.cid.toString())
-    if (this.events.push) this.events.push(res.cid.toString())
-    if (this.parent.events.upload) this.parent.events.upload(res.cid.toString())
-    if (this.parent.events.push) this.parent.events.push(res.cid.toString())
+    this.trigger(["upload", "push"], cid)
   }
   async check(cid) {
     while(true) {
@@ -272,6 +285,7 @@ class Nebulus {
         `${this.storage}/ipfs`,
         filePath,
       )
+      console.log("create symlink", `${this.storage}/ipfs/${cid}`)
       await fs.promises.symlink(relativePath, `${this.storage}/ipfs/${cid}`, 'file').catch((e) => {})
       return cid
     }

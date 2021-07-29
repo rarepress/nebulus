@@ -1,10 +1,17 @@
 const assert = require('assert');
 const axios = require('axios')
 const fs = require('fs')
+const path = require('path')
+const rmfr = require('rmfr')
 const Nebulus = require('../index')
 const STORE = __dirname + "/storage"
-const nebulus = new Nebulus({ path: STORE })
+var nebulus
 describe('nebulus', function() {
+  before(async () => {
+    console.log("deleting all files")
+    await rmfr(STORE)
+    nebulus = new Nebulus({ path: STORE })
+  })
   describe("writing", () => {
     describe("add", () => {
       it('should add buffers correctly', async () => {
@@ -96,6 +103,30 @@ describe('nebulus', function() {
             })
           })
         })
+        it("should handle filtered pull event handler correctly", async () => {
+          const cid = "bafkreifzjut3te2nhyekklss27nh3k72ysco7y32koao5eei66wof36n5e"
+          nebulus.pull(cid)
+          await new Promise((resolve, reject) => {
+            nebulus.on("pull:" + cid, (downloaded_cid) => {
+              let filePath = STORE + "/ipfs/" + downloaded_cid
+              // 1. check cid
+              assert.equal(cid, downloaded_cid) 
+              // 2. Check the file exists
+              fs.access(filePath, fs.constants.F_OK, (err) => {
+                assert(!err)
+                // 3. Check the file is symbolic link
+                fs.lstat(filePath, (err,stats) => {
+                  assert(stats.isSymbolicLink())
+                  // 4. Check the linked file exists
+                  fs.readlink(filePath, (err, linkString) => {
+                    assert(linkString)
+                    resolve()
+                  });
+                })
+              });
+            })
+          })
+        })
       })
       describe("push", () => {
         it('should upload buffers correctly', async function () {
@@ -125,6 +156,21 @@ describe('nebulus', function() {
               resolve(actual)
             })
           })
+          assert.equal(cid, actual)
+        })
+        it("should handle filtered push event handler correctly", async () => {
+          //this.timeout(10000)
+          const random = Math.random().toString()
+          console.log("adding", random)
+          const buffer = Buffer.from(random)
+          const cid = await nebulus.add(buffer)
+          nebulus.push(cid)
+          let actual = await new Promise((resolve, reject) => {
+            nebulus.on("push:" + cid, (actual) => {
+              resolve(actual)
+            })
+          })
+          console.log("https://ipfs.io/ipfs/" + cid)
           assert.equal(cid, actual)
         })
       })
