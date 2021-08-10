@@ -164,7 +164,7 @@ Here's an example workflow:
 3. Wait for another node to pin or replicate the files
 4. Stop seeding
 
-You can use the `upload` event to achieve this: 
+You can use the `push` event to achieve this: 
 
 ```javascript
 await nebulus.connect()
@@ -173,7 +173,7 @@ nebulus.on("push", (cid) => {
 })
 ```
 
-Because the `upload` event fires when a CID is successfully found on an IPFS gateway (ipfs.io), you can be sure that it will be pinned for at least a while.
+Because the `push` event fires when a CID is successfully found on an IPFS gateway (ipfs.io), you can be sure that it will be pinned for at least a while.
 
 You can take advantage of this feature when you are certain that whoever the file is intended for will pick it up eventually as long as it's discovered in the gateway.
 
@@ -270,7 +270,7 @@ const cid = "bafkreifzjut3te2nhyekklss27nh3k72ysco7y32koao5eei66wof36n5e"
 run(cid)
 ```
 
-## Upload a File to IPFS
+## Push a File to IPFS
 
 ```javascript
 const Nebulus = require('nebulus')
@@ -278,9 +278,9 @@ const nebulus = new Nebulus()
 const run = async (cid) => {
   const buffer = Buffer.from("never gonna give you up")
   const cid = await nebulus.add(buffer)
-  nebulus.on("push", (uploaded_cid) => {
-    // check the following uploaded URL in the browser
-    console.log("https://ipfs.io/ipfs/" + uploaded_cid)
+  nebulus.on("push", (pushed_cid) => {
+    // check the following pushed URL in the browser
+    console.log("https://ipfs.io/ipfs/" + pushed_cid)
   })
   nebulus.push(cid)
 }
@@ -465,7 +465,7 @@ await nebulus.connect()
 nebulus.push(<cid>)
 ```
 
-Triggers an "upload" event when the file is successfully replicated to IPFS gateways
+Triggers a "push" event when the file is successfully replicated to IPFS gateways
 
 ```javascript
 await nebulus.connect()
