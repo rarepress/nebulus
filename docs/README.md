@@ -316,6 +316,7 @@ Where `<options>` can have the following attributes:
 
 - `path`: storage path. if left out, it's `.nebulus` (optional)
 - `max`: max file size in MB. If left out, no max limit (optional)
+- `config`: The [IPFS config object](https://github.com/ipfs/js-ipfs/blob/master/docs/CONFIG.md) for customizing Nebulus IPFS node. You can use this to run multiple Nebulus nodes on one machine without port conflict.
 
 The `path` is where the Nebulus file system will be constructed. For example:
 
@@ -344,6 +345,23 @@ const nebulus = new Nebulus({max: 100})
 
 will create a `.nebulus` folder and allow up to 100MB file storage.
 
+Finally, you can pass in a `config` object to customize the IPFS node:
+
+```javascript
+const Nebulus = require('nebulus')
+const nebulus = new Nebulus({
+  config: {
+    Addresses: {
+      Swarm: [
+        "/ip4/0.0.0.0/tcp/4030",
+        "/ip4/127.0.0.1/tcp/4031/ws"
+      ],
+      API: "/ip4/127.0.0.1/tcp/5030",
+      Gateway: "/ip4/127.0.0.1/tcp/9100"
+    }
+  }
+})
+```
 
 ## Writing
 
