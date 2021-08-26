@@ -42,26 +42,31 @@ class CID {
   }
 }
 class Network {
-  constructor({ parent, cid, storage }) {
+  constructor({ parent, cid, storage, config }) {
     this.cid = cid
     this.events = {}
     this.storage = storage
+    this.config = config
     this.parent = parent
   }
   on (event, callback) {
     this.events[event] = callback
   }
   async start() {
-    this.ipfs = await IPFS.create({repo: `${this.storage}/repo` })
+    let o = this.config ? Object.assign({}, { repo: `${this.storage}/repo` }, { config: this.config }) : { repo: `${this.storage}/repo` }
+    this.ipfs = await IPFS.create(o)
+    this.parent.connected = true
     exitHook((callback) => {
       this.ipfs.stop().then(() => {
         console.log("IPFS Stoppped")
+        this.parent.connected = false
         callback();
       })
     });
   }
   async stop() {
     await this.ipfs.stop()
+    this.parent.connected = false
   }
   push(cid) {
     return this.upload(cid)
@@ -132,11 +137,10 @@ class Network {
     }
   }
   async upload(cid) {
-    if (!this.ipfs) {
-      throw new Error("ipfs network not initialized yet")
-      return
+    if (!this.parent.connected) {
+      await this.start()
     }
-    const filePath = `${this.storage}/ipfs/${cid}`
+    const filePath = (cid.startsWith("/ipfs/") ? `${this.storage}${cid}` : `${this.storage}/ipfs/${cid}`)
     const stat = await fs.promises.lstat(filePath);
     let isDirectory = stat.isDirectory()
     let res
@@ -192,11 +196,14 @@ class Network {
 class Nebulus {
   constructor(options) {
     this.events = {}
+    this.config = (options && options.config ? options.config : null)
     this.storage = (options && options.path ? options.path : ".nebulus")
+    this.path = this.storage
     this.max = (options && options.max ? options.max : null)
     this.cid = new CID()
     this.ipfs = new Network({
       parent: this,
+      config: this.config,
       storage: this.storage,
       cid: this.cid
     })
